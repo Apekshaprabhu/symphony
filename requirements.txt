@@ -129,8 +129,6 @@ pyrsistent==0.18.1
 pytesseract==0.3.9
 python-dateutil==2.8.2
 pytz==2022.1
-pywin32==304
-pywinpty==2.0.8
 pyzmq==24.0.1
 qtconsole==5.3.2
 QtPy==2.2.0
@@ -168,7 +166,6 @@ tornado==6.2
 tqdm==4.64.0
 traitlets==5.4.0
 Twisted==22.4.0
-twisted-iocpsupport==1.0.2
 typing_extensions==4.2.0
 uritools==4.0.0
 urlextract==1.6.0
