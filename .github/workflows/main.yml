@@ -29,3 +29,12 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/melody:latest
           cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/melody:buildcache
           cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/melody:buildcache,mode=max
+      -
+        name: executing remote ssh commands using ssh key
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: 22
+          script: docker stop symphony && docker run -d -p 80:5000 --name symphony --rm apekshaprabhu/melody:latest
