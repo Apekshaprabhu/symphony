@@ -26,4 +26,6 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           push: true
-          tags: apekshaprabhu/melody:latest
+          tags: ${{ secrets.DOCKERHUB_USERNAME }}/melody:latest
+          cache-from: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/melody:buildcache
+          cache-to: type=registry,ref=${{ secrets.DOCKERHUB_USERNAME }}/melody:buildcache,mode=max
