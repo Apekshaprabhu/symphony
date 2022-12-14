@@ -6,52 +6,64 @@
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="static/dashboard.css">
+    <link rel="icon" type="image/x-icon" href="static/rsc/favicon.png">
     <title>Dashboard</title>
 </head>
 
 <body>
     <div class="outer-container">
         <div class="inner-container">
-            <div class="head">
-                <div class="heading">
-                    <h1>Hello, how are you feeling today ?</h1>
+            <div class="nav">
+                <div class="logo">
+                    <img src="static/rsc/favicon.png" alt="">
+                    <p>symphony</p>
                 </div>
                 <div class="logout-button">
-                    <button><a href="{{url_for('home')}}">Log Out</a></button>
+                    <button class="logout">
+                        <a href="{{ url_for('home') }}">Logout</a>
+                    </button>
                 </div>
             </div>
             <div class="middle">
-                <div class="left">
+                <div class="heading">
+                    <p class="first">Hello {{ name }} <img src="static/rsc/hello.png" alt="" class="hello"></p>
+                    <p class="second">How are you feeling today ?</p>
+                </div>
+                <div class="mood-grid">
                     <div class="moods">
-                        <div class="row">
+                        <div class="mood-row">
                             <div class="mood happy">
-                                <div>happy</div>
+                                <a href="https://youtube.com/playlist?list=PL5zqiCKMuDXWdRPs354hcUqBcn9HAndZG"><p>Happy</p></a>
                             </div>
-                            <div class="mood sad">
-                                <div>sad</div>
+                            <div class="mood right sad">
+                                <a href="https://youtube.com/playlist?list=PL5zqiCKMuDXUB9X76fjsEMZzGozU4_5hL"><p>Sad</p></a>
                             </div>
                         </div>
-                        <div class="row">
+                        <div class="mood-row">
                             <div class="mood angry">
-                                <div>angry</div>
+                                <a href="https://youtube.com/playlist?list=PL5zqiCKMuDXXK0CnjaYNTHixSN4kf1kUX"><p>Angry</p></a>
                             </div>
-                            <div class="mood neutral">
-                                <div>neutral</div>
+                            <div class="mood right neutral">
+                                <a href="https://youtube.com/playlist?list=PL5zqiCKMuDXWY2wAQ0975KcMVYSCG4yYJ">
+                                <p>Neutral</p></a>
                             </div>
                         </div>
                     </div>
                 </div>
                 <div class="right">
-                    <div class="image">
-                        
-                    </div>
+                    <div class="image"></div>
+                  </div>
                 </div>
-            </div>
-            <div class="webcam">
-                <button class="detect-mood"><a href="">Detect mood using camera </a></button>
+                <div class="webcam">
+                  <button class="detect-mood">
+                    <a href="/choose_lang">
+                      Detect mood using camera</a>
+                    </button>
+                  </button>
             </div>
         </div>
     </div>
+    <svg width="100%" height="100%" id="svg" viewBox="0 0 1440 400" xmlns="http://www.w3.org/2000/svg" class="transition duration-300 ease-in-out delay-150"><defs><linearGradient id="gradient" x1="0%" y1="55%" x2="100%" y2="45%"><stop offset="5%" stop-color="#f871c7"></stop><stop offset="95%" stop-color="#a8c2d1"></stop></linearGradient></defs><path d="M 0,400 C 0,400 0,200 0,200 C 296,163 592,126 832,126 C 1072,126 1256,163 1440,200 C 1440,200 1440,400 1440,400 Z" stroke="none" stroke-width="0" fill="url(#gradient)" fill-opacity="1" class="transition-all duration-300 ease-in-out delay-150 path-0"></path></svg>
 </body>
 
 </html>

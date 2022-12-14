@@ -16,15 +16,7 @@
     min-height: 100%;
     z-index: -1;
 }
-  
-body
-{
-    /* background-image: url("rsc/2.jpg");
-    background-repeat: no-repeat;
-    background-attachment: fixed;
-    background-size: cover;
-    background-position: center; */
-}
+
 a
 {
     color: white;
