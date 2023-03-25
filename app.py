@@ -1,4 +1,4 @@
-from flask import Flask, render_template, url_for, redirect,request
+from flask import Flask, render_template, url_for, redirect, request
 import numpy as np
 import cv2
 from keras.models import load_model
@@ -9,6 +9,19 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField
 from wtforms.validators import InputRequired, Length, ValidationError
 from flask_bcrypt import Bcrypt
+import spotipy
+from spotipy.oauth2 import SpotifyClientCredentials
+
+# Replace with your client ID and client secret obtained from the Spotify Developer Dashboard
+client_id = '966596594f2b4bcd9139cbb7bbf701f4'
+client_secret = 'd7acd4bdc3104e178aeb67246e2e8620'
+
+# Authenticate your application by requesting an access token
+auth_manager = SpotifyClientCredentials(
+    client_id=client_id, client_secret=client_secret)
+sp = spotipy.Spotify(auth_manager=auth_manager)
+
+track_uri = ''
 
 app = Flask(__name__)
 db = SQLAlchemy(app)
@@ -28,7 +41,6 @@ label_map = ['Anger', 'Neutral', 'Fear', 'Happy', 'Sad', 'Surprise']
 print("+"*50, "loadin gmmodel")
 model = load_model('model.h5')
 cascade = cv2.CascadeClassifier(haarcascade)
-
 
 
 @login_manager.user_loader
@@ -72,6 +84,7 @@ class LoginForm(FlaskForm):
 def home():
     return render_template('home.html')
 
+
 @app.route('/login', methods=['GET', 'POST'])
 def login():
     form = LoginForm()
@@ -89,13 +102,15 @@ def login():
 def dashboard():
     return render_template('dashboard.html')
 
-@app.route('/choose_singer', methods = ["POST"])
-def choose_singer():
-	info['language'] = request.form['language']
-	print(info)
-	return render_template('choose_singer.html', data = info['language'])
 
-@app.route('/choose_lang', methods = ["GET"])
+@app.route('/choose_singer', methods=["POST"])
+def choose_singer():
+    info['language'] = request.form['language']
+    print(info)
+    return render_template('choose_singer.html', data=info['language'])
+
+
+@app.route('/choose_lang', methods=["GET"])
 def choose_lang():
     return render_template('index.html')
 
@@ -119,43 +134,86 @@ def register():
         return redirect(url_for('login'))
 
     return render_template('register.html', form=form)
+
+
 @app.route('/emotion_detect', methods=["POST"])
 def emotion_detect():
-	info['singer'] = request.form['singer']
+    info['singer'] = request.form['singer']
 
-	found = False
+    found = False
 
-	cap = cv2.VideoCapture(0)
-	while not(found):
-		_, frm = cap.read()
-		gray = cv2.cvtColor(frm,cv2.COLOR_BGR2GRAY)
+    cap = cv2.VideoCapture(0)
+    while not (found):
+        _, frm = cap.read()
+        gray = cv2.cvtColor(frm, cv2.COLOR_BGR2GRAY)
 
-		faces = cascade.detectMultiScale(gray, 1.4, 1)
+        faces = cascade.detectMultiScale(gray, 1.4, 1)
 
-		for x,y,w,h in faces:
-			found = True
-			roi = gray[y:y+h, x:x+w]
-			cv2.imwrite("static/face.jpg", roi)
+        for x, y, w, h in faces:
+            found = True
+            roi = gray[y:y+h, x:x+w]
+            cv2.imwrite("static/face.jpg", roi)
 
-	roi = cv2.resize(roi, (48,48))
+    roi = cv2.resize(roi, (48, 48))
 
-	roi = roi/255.0
-	
-	roi = np.reshape(roi, (1,48,48,1))
+    roi = roi/255.0
 
-	prediction = model.predict(roi)
+    roi = np.reshape(roi, (1, 48, 48, 1))
 
-	print(prediction)
+    prediction = model.predict(roi)
 
-	prediction = np.argmax(prediction)
-	prediction = label_map[prediction]
+    print(prediction)
 
-	cap.release()
+    prediction = np.argmax(prediction)
+    prediction = label_map[prediction]
 
-	link  = f"https://www.youtube.com/results?search_query={info['singer']}+{prediction}+{info['language']}+song"
-	webbrowser.open(link)
+    cap.release()
+    results = sp.search(prediction, type="track", limit=1)
+    track_uri = results["tracks"]["items"][0]["uri"]
+    # pl.app.search(prediction)
+    if track_uri != '':
+        sp.start_playback(uris=[track_uri])
+        # return 'success'
+    else:
+        return 'error'
 
-	return render_template("emotion_detect.html", data=prediction, link=link)
+    return render_template('index1.html')
+    # return redirect(url_for('play'))
+
+    # link  = f"https://www.youtube.com/results?search_query={info['singer']}+{prediction}+{info['language']}+song"
+
+    # webbrowser.open(link)
+
+    # return render_template("emotion_detect.html", data=prediction, link='')
+
+
+@app.route('/search', methods=['POST'])
+def search():
+    global track_uri
+    query = request.form['query']
+    track_results = sp.search(q='track:' + query, type='track', limit=1)
+
+    if len(track_results['tracks']['items']) > 0:
+        track_uri = track_results['tracks']['items'][0]['uri']
+        return 'success'
+    else:
+        return 'error'
+
+
+@app.route('/play')
+def play():
+    if track_uri != '':
+        sp.start_playback(uris=[track_uri])
+        return 'success'
+    else:
+        return 'error'
+
+
+@app.route('/pause')
+def pause():
+    sp.pause_playback()
+    return 'success'
+
 
 if __name__ == "__main__":
     app.run(debug=True)
